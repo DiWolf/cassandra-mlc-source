@@ -1,0 +1,184 @@
+parameters:
+  - name: ENV
+    type: string
+    default: development
+  - name: DEPLOY_HOST
+    type: string
+    default: development.z-UM
+  - name: BRANCH_NAME
+    type: string
+    default: development
+  - name: ROOT_PATH
+    type: string
+    default: /home/artemisdev/nodeJs/
+  - name: BUILD_ID
+    type: string
+    default: 0
+  - name: APP_PORT
+    type: string
+    default: 9000
+  - name: DB_USERNAME
+    type: string
+    default: testuser
+  - name: DB_PASSWORD
+    type: string
+    default: 1234567890
+  - name: DB_NAME
+    type: string
+    default: test
+  - name: DB_HOST
+    type: string
+    default: 127.0.0.1
+  - name: DB_PORT
+    type: string
+    default: 5432
+  - name: JWT_SECRET
+    type: string
+    default: dasdadas3121
+  - name: JWT_EXPIRES_IN
+    type: string
+    default: 1h
+  - name: AGENT_POOL
+    type: string
+    default: aurorapool
+  - name: AZURE_ACCOUNT_CONNECTION_STRING
+    type: string
+    default: ""
+  - name: CASSANDRA_KEYSPACE
+    type: string
+    default: test
+  - name: CASSANDRA_HOSTS
+    type: string
+    default: ""
+  - name: CASSANDRA_DATACENTER
+    type: string
+    default: datacenter1
+  - name: CASSANDRA_USERNAME
+    type: string
+    default: ""
+  - name: CASSANDRA_PASSWORD
+    type: string
+    default: ""
+  - name: MYSQL_DB_HOST
+    type: string
+    default: ""
+  - name: MYSQL_DB_PORT 
+    type: string
+    default: ""
+  - name: MYSQL_DB_USERNAME   
+    type: string
+    default: ""
+  - name: MYSQL_DB_PASSWORD     
+    type: string
+    default: ""
+  - name: MYSQL_DB_NAME
+    type: string
+    default: ""
+  - name: AZURE_STORAGE_CONTAINER_NAME
+    type: string
+    default: ""
+  - name: AZURE_COMPUTER_VISION_ENDPOINT
+    type: string
+    default: ""
+  - name: AZURE_COMPUTER_VISION_KEY
+    type: string
+    default: ""
+  - name: DOCKER_BACKEND_IMAGE
+    type: string
+    default: backendimage
+  - name: AZURE_BLOB_CONTAINER_NAME
+    type: string
+    default: ""
+  - name: AZURE_FOLDER_REGULACIONES
+    type: string
+    default: ""
+
+stages:
+  - stage: deploy_${{ parameters.env }}
+    displayName: Deploy to ${{ parameters.env }}
+    dependsOn: CI
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/${{ parameters.branch_name }}'))
+    jobs:
+      - deployment: Deploy_to_${{ parameters.env }}
+        pool:
+          name: ${{ parameters.AGENT_POOL }}
+          demands:
+            - Agent.Name -equals ${{ parameters.DEPLOY_HOST }}
+        workspace:
+          clean: all
+        environment: "${{ parameters.DEPLOY_HOST }}"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: |
+                    echo "start building the backend image..."
+                    cd $AGENT_BUILD_DIRECTORY/backendBuild/
+                    docker build -t $DOCKER_BACKEND_IMAGE .
+                    echo "creating backend .env file.."
+                    echo "
+                    # General server info
+                    BUILD_ID=$BUILD_ID
+                    NODE_ENV=$ENV
+                    PORT=$APP_PORT
+
+                    # DB Info
+                    DB_USERNAME=$DB_USERNAME
+                    DB_PASSWORD=$DB_PASSWORD
+                    DB_NAME=$DB_NAME
+                    DB_HOST=$DB_HOST
+                    DB_PORT=$DB_PORT
+                    CASSANDRA_KEYSPACE=$CASSANDRA_KEYSPACE
+                    CASSANDRA_HOSTS=$CASSANDRA_HOSTS 
+                    CASSANDRA_DATACENTER=$CASSANDRA_DATACENTER 
+                    CASSANDRA_USERNAME=$CASSANDRA_USERNAME 
+                    CASSANDRA_PASSWORD=$CASSANDRA_PASSWORD 
+                    MYSQL_DB_HOST=$MYSQL_DB_HOST
+                    MYSQL_DB_PORT=$MYSQL_DB_PORT
+                    MYSQL_DB_USERNAME=$MYSQL_DB_USERNAME
+                    MYSQL_DB_PASSWORD=$MYSQL_DB_PASSWORD
+                    MYSQL_DB_NAME=$MYSQL_DB_NAME
+                    JWT_SECRET=$JWT_SECRET
+                    JWT_EXPIRES_IN=$JWT_EXPIRES_IN
+                    AZURE_ACCOUNT_CONNECTION_STRING=$AZURE_ACCOUNT_CONNECTION_STRING
+                    AZURE_STORAGE_CONTAINER_NAME=$AZURE_STORAGE_CONTAINER_NAME
+                    AZURE_COMPUTER_VISION_ENDPOINT=$AZURE_COMPUTER_VISION_ENDPOINT
+                    AZURE_COMPUTER_VISION_KEY=$AZURE_COMPUTER_VISION_KEY
+                    AZURE_BLOB_CONTAINER_NAME=$AZURE_BLOB_CONTAINER_NAME
+                    AZURE_FOLDER_REGULACIONES=$AZURE_FOLDER_REGULACIONES
+                    " > $ROOT_PATH/back/.env
+                    echo "restarting compose.."
+                    cd $ROOT_PATH
+                    docker compose down
+                    docker compose up -d
+                  displayName: "building.. creating env.. restarting compose.."
+                  env:
+                    BUILD_ID: ${{ parameters.BUILD_ID }}
+                    ENV: ${{ parameters.ENV }}
+                    APP_PORT: ${{ parameters.APP_PORT }}
+                    DB_USERNAME: ${{ parameters.DB_USERNAME }}
+                    DB_PASSWORD: ${{ parameters.DB_PASSWORD }}
+                    DB_NAME: ${{ parameters.DB_NAME }}
+                    DB_HOST: ${{ parameters.DB_HOST }}
+                    DB_PORT: ${{ parameters.DB_PORT }}
+                    CASSANDRA_KEYSPACE: ${{ parameters.CASSANDRA_KEYSPACE }}
+                    CASSANDRA_HOSTS: ${{ parameters.CASSANDRA_HOSTS }}
+                    CASSANDRA_DATACENTER: ${{ parameters.CASSANDRA_DATACENTER }}
+                    CASSANDRA_USERNAME: ${{ parameters.CASSANDRA_USERNAME }}
+                    CASSANDRA_PASSWORD: ${{ parameters.CASSANDRA_PASSWORD }}
+                    MYSQL_DB_HOST: ${{parameters.MYSQL_DB_HOST}}
+                    MYSQL_DB_PORT: ${{parameters.MYSQL_DB_PORT}}
+                    MYSQL_DB_USERNAME: ${{parameters.MYSQL_DB_USERNAME}}
+                    MYSQL_DB_PASSWORD: ${{parameters.MYSQL_DB_PASSWORD}}
+                    MYSQL_DB_NAME: ${{parameters.MYSQL_DB_NAME}}
+                    ROOT_PATH: ${{ parameters.ROOT_PATH }}
+                    AGENT_BUILD_DIRECTORY: $(Agent.BuildDirectory)
+                    JWT_SECRET: ${{parameters.JWT_SECRET}}
+                    JWT_EXPIRES_IN: ${{parameters.JWT_EXPIRES_IN}}
+                    AZURE_ACCOUNT_CONNECTION_STRING: ${{parameters.AZURE_ACCOUNT_CONNECTION_STRING}}
+                    AZURE_STORAGE_CONTAINER_NAME: ${{parameters.AZURE_STORAGE_CONTAINER_NAME}}
+                    AZURE_COMPUTER_VISION_ENDPOINT: ${{parameters.AZURE_COMPUTER_VISION_ENDPOINT}}
+                    AZURE_COMPUTER_VISION_KEY: ${{parameters.AZURE_COMPUTER_VISION_KEY}}
+                    DOCKER_BACKEND_IMAGE: ${{parameters.DOCKER_BACKEND_IMAGE}}
+                    AZURE_BLOB_CONTAINER_NAME: ${{parameters.AZURE_BLOB_CONTAINER_NAME}}
+                    AZURE_FOLDER_REGULACIONES: ${{parameters.AZURE_FOLDER_REGULACIONES}}

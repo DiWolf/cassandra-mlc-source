@@ -1,0 +1,49 @@
+# Node modules
+/node_modules/
+/uploads/
+/docs/
+# Dependencias de producción (si usas yarn)
+yarn.lock
+
+# Dependencias de desarrollo (si usas npm)
+package-lock.json
+
+# Directorios de compilación de TypeScript
+/dist/
+/build/
+/out/
+
+# Archivos generados por TypeScript
+*.tsbuildinfo
+
+# Archivos de configuración de IDEs (Visual Studio Code)
+.vscode/
+
+# Archivos de configuración de JetBrains (IntelliJ, WebStorm, PhpStorm, etc.)
+.idea/
+
+# Archivos temporales y de caché
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Archivos temporales de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de cobertura (si usas herramientas como Jest, Istanbul, etc.)
+/coverage/
+
+# Archivos de configuración de la base de datos local (si usas SQLite o similares)
+*.sqlite
+*.db
+
+# Archivos de configuración de logs
+*.log
+
+# Archivos generados por la transpilación de TypeScript (si usas otro tipo de transpilador)
+.d.ts
+*.js
+*.jsx
+*.map
+.env

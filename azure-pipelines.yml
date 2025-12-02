@@ -1,0 +1,108 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - development
+      - release
+  paths:
+    exclude:
+      - doc
+pool:
+  #name: aurorapool
+  #demands:
+  #  - Agent.Name -equals mlcAppsServer
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: CI
+    displayName: "Continuous Integration - Build and publish"
+    jobs:
+      - job: Zip_Publish
+        steps:
+          - script: |
+              rm -rfv ./git/* .git .gitignore sample.env .prettierrc azure-pipelines.yml pipeline_templates package-lock.json
+            displayName: "Eliminando archivos que no se usan.."
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: "./"
+              ArtifactName: "backendBuild"
+              publishLocation:
+                "Container"
+
+                ################
+                ## DEPLOYMENT ##
+                ################
+
+    ### Development
+  - template: pipeline_templates/deploy.yml
+    parameters:
+      ENV: development
+      DEPLOY_HOST: $(DEV_HOST_DEPLOY)
+      AGENT_POOL: $(DEV_POOL_AGENT)
+      BRANCH_NAME: development
+      ROOT_PATH: $(DEV_ROOT_PATH)
+      BUILD_ID: $(Build.BuildId)
+      APP_PORT: $(DEV_APP_PORT)
+      DB_USERNAME: $(DEV_DB_USERNAME)
+      DB_PASSWORD: $(DEV_DB_PASSWORD)
+      DB_NAME: $(DEV_DB_DATABASE_NAME)
+      DB_HOST: $(DEV_DB_HOST)
+      DB_PORT: $(DEV_DB_PORT)
+      CASSANDRA_KEYSPACE: $(DEV_CASSANDRA_KEYSPACE)
+      CASSANDRA_HOSTS: $(DEV_CASSANDRA_HOSTS)
+      CASSANDRA_DATACENTER: $(DEV_CASSANDRA_DATACENTER)
+      CASSANDRA_USERNAME: $(DEV_CASSANDRA_USERNAME)
+      CASSANDRA_PASSWORD: $(DEV_CASSANDRA_PASSWORD)
+      MYSQL_DB_HOST: $(DEV_MYSQL_DB_HOST)
+      MYSQL_DB_PORT: $(DEV_MYSQL_DB_PORT)
+      MYSQL_DB_USERNAME: $(DEV_MYSQL_DB_USERNAME)
+      MYSQL_DB_PASSWORD: $(DEV_MYSQL_DB_PASSWORD)
+      MYSQL_DB_NAME: $(DEV_MYSQL_DB_NAME)
+      JWT_SECRET: $(DEV_TOKEN_SECRET)
+      JWT_EXPIRES_IN: $(DEV_JWT_EXPIRES_IN)
+      AZURE_ACCOUNT_CONNECTION_STRING: $(DEV_AZURE_ACCOUNT)
+      AZURE_STORAGE_CONTAINER_NAME: $(DEV_AZURE_STORAGE_CONTAINER_NAME)
+      AZURE_COMPUTER_VISION_ENDPOINT: $(DEV_AZURE_COMPUTER_VISION_ENDPOINT)
+      AZURE_COMPUTER_VISION_KEY: $(DEV_AZURE_COMPUTER_VISION_KEY)
+      DOCKER_BACKEND_IMAGE: $(DEV_PORTALDOCKER_BACKEND_IMAGE)
+      AZURE_BLOB_CONTAINER_NAME: $(DEV_AZURE_BLOB_CONTAINER_NAME)
+      AZURE_FOLDER_REGULACIONES: $(DEV_AZURE_FOLDER_REGULACIONES)
+  - template: pipeline_templates/deploy.yml
+    parameters:
+      ENV: production
+      DEPLOY_HOST: $(PROD_HOST_DEPLOY)
+      AGENT_POOL: $(PROD_POOL_AGENT)
+      BRANCH_NAME: master
+      ROOT_PATH: $(PROD_ROOT_PATH)
+      BUILD_ID: $(Build.BuildId)
+      APP_PORT: $(PROD_APP_PORT)
+      DB_USERNAME: $(PROD_DB_USERNAME)
+      DB_PASSWORD: $(PROD_DB_PASSWORD)
+      DB_NAME: $(PROD_DB_DATABASE_NAME)
+      DB_HOST: $(PROD_DB_HOST)
+      DB_PORT: $(PROD_DB_PORT)
+      CASSANDRA_KEYSPACE: $(PROD_CASSANDRA_KEYSPACE)
+      CASSANDRA_HOSTS: $(PROD_CASSANDRA_HOSTS)
+      CASSANDRA_DATACENTER: $(PROD_CASSANDRA_DATACENTER)
+      CASSANDRA_USERNAME: $(PROD_CASSANDRA_USERNAME)
+      CASSANDRA_PASSWORD: $(PROD_CASSANDRA_PASSWORD)
+      MYSQL_DB_HOST: $(PROD_MYSQL_DB_HOST)
+      MYSQL_DB_PORT: $(PROD_MYSQL_DB_PORT)
+      MYSQL_DB_USERNAME: $(PROD_MYSQL_DB_USERNAME)
+      MYSQL_DB_PASSWORD: $(PROD_MYSQL_DB_PASSWORD)
+      MYSQL_DB_NAME: $(PROD_MYSQL_DB_NAME)
+      JWT_SECRET: $(PROD_TOKEN_SECRET)
+      JWT_EXPIRES_IN: $(PROD_JWT_EXPIRES_IN)
+      AZURE_ACCOUNT_CONNECTION_STRING: $(PROD_AZURE_ACCOUNT)
+      AZURE_STORAGE_CONTAINER_NAME: $(PROD_AZURE_STORAGE_CONTAINER_NAME)
+      AZURE_COMPUTER_VISION_ENDPOINT: $(PROD_AZURE_COMPUTER_VISION_ENDPOINT)
+      AZURE_COMPUTER_VISION_KEY: $(PROD_AZURE_COMPUTER_VISION_KEY)
+      DOCKER_BACKEND_IMAGE: $(PROD_PORTALDOCKER_BACKEND_IMAGE)
+      AZURE_BLOB_CONTAINER_NAME: $(PROD_AZURE_BLOB_CONTAINER_NAME)
+      AZURE_FOLDER_REGULACIONES: $(PROD_AZURE_FOLDER_REGULACIONES)
