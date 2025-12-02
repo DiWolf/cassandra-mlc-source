@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import dotenv from "dotenv";
-// import fs from "fs";
+import fs from "fs";
 dotenv.config();
 
 const pool = new Pool({
@@ -10,9 +10,9 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   // Opciones adicionales de la conexión, como el timeout, etc.
-  // ssl: {
-  //   rejectUnauthorized: false, // Acepta certificados no verificados (útil para pruebas locales)
-  // },
+  ssl: {
+    rejectUnauthorized: false, // Acepta certificados no verificados (útil para pruebas locales)
+  },
 });
 
 export default pool;

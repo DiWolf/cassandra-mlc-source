@@ -30,5 +30,5 @@ COPY --from=builder /home/node/app/build ./build
 # RUN npx sequelize db:seed:all; exit 0
 # RUN npm un sequelize-cli
 
-EXPOSE 3000
+EXPOSE 8100
 CMD [ "node", "build/index.js" ]

@@ -4,7 +4,6 @@ interface DependenciasSync {
   siglas: string;
   correo: string;
   colonia: string;
-  direccion: string;
   cp: string;
   lada: string;
   tel1: string;

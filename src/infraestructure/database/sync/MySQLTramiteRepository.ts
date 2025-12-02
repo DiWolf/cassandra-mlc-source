@@ -15,7 +15,7 @@ export class MySQLTramiteRepository implements ITramiteRepository {
           id_dep: row.id_dep,
           id_tramite: row.id_tramite,
           nombre: row.nombre,
-          es_publico: row.publico,
+          publico: row.publico,
         } as TramiteSync) // Esto cumple con la interfaz
     );
   }

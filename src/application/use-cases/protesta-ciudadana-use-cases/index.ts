@@ -1,2 +1,0 @@
-export { getAllTipoProtestaCiudadanaUseCase } from "./actions/getAll-tipo-protesta-ciudadana.use-case";
-export { getAllMotivoProtestaCiudadanaUseCase } from "./actions/getAll-motivo-protesta-ciudadana.use-case";

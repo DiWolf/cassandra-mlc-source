@@ -26,11 +26,10 @@ export class MySqlDependenciaRepository implements IDependenciaRepository {
           siglas: row.siglas,
           tel1: row.tel1,
           titular: row.titular,
-          direaccion: row.direccion
         } as DependenciasSync)
     );
   }
   save(dependencias: DependenciasSync[]): Promise<void> {
-    throw new Error("Method not implemented."+dependencias);
+    throw new Error("Method not implemented.");
   }
 }

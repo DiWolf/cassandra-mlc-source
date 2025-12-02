@@ -1,9 +1,9 @@
-import { Request,  NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
-export const authenticate = (req: Request, next: NextFunction): void => {
+export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
     const authHeader = req.headers.authorization;
     
     if (!authHeader) {

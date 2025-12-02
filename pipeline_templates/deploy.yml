@@ -74,24 +74,6 @@ parameters:
   - name: MYSQL_DB_NAME
     type: string
     default: ""
-  - name: AZURE_STORAGE_CONTAINER_NAME
-    type: string
-    default: ""
-  - name: AZURE_COMPUTER_VISION_ENDPOINT
-    type: string
-    default: ""
-  - name: AZURE_COMPUTER_VISION_KEY
-    type: string
-    default: ""
-  - name: DOCKER_BACKEND_IMAGE
-    type: string
-    default: backendimage
-  - name: AZURE_BLOB_CONTAINER_NAME
-    type: string
-    default: ""
-  - name: AZURE_FOLDER_REGULACIONES
-    type: string
-    default: ""
 
 stages:
   - stage: deploy_${{ parameters.env }}
@@ -114,7 +96,7 @@ stages:
                 - script: |
                     echo "start building the backend image..."
                     cd $AGENT_BUILD_DIRECTORY/backendBuild/
-                    docker build -t $DOCKER_BACKEND_IMAGE .
+                    docker build -t portalback .
                     echo "creating backend .env file.."
                     echo "
                     # General server info
@@ -141,11 +123,6 @@ stages:
                     JWT_SECRET=$JWT_SECRET
                     JWT_EXPIRES_IN=$JWT_EXPIRES_IN
                     AZURE_ACCOUNT_CONNECTION_STRING=$AZURE_ACCOUNT_CONNECTION_STRING
-                    AZURE_STORAGE_CONTAINER_NAME=$AZURE_STORAGE_CONTAINER_NAME
-                    AZURE_COMPUTER_VISION_ENDPOINT=$AZURE_COMPUTER_VISION_ENDPOINT
-                    AZURE_COMPUTER_VISION_KEY=$AZURE_COMPUTER_VISION_KEY
-                    AZURE_BLOB_CONTAINER_NAME=$AZURE_BLOB_CONTAINER_NAME
-                    AZURE_FOLDER_REGULACIONES=$AZURE_FOLDER_REGULACIONES
                     " > $ROOT_PATH/back/.env
                     echo "restarting compose.."
                     cd $ROOT_PATH
@@ -176,9 +153,3 @@ stages:
                     JWT_SECRET: ${{parameters.JWT_SECRET}}
                     JWT_EXPIRES_IN: ${{parameters.JWT_EXPIRES_IN}}
                     AZURE_ACCOUNT_CONNECTION_STRING: ${{parameters.AZURE_ACCOUNT_CONNECTION_STRING}}
-                    AZURE_STORAGE_CONTAINER_NAME: ${{parameters.AZURE_STORAGE_CONTAINER_NAME}}
-                    AZURE_COMPUTER_VISION_ENDPOINT: ${{parameters.AZURE_COMPUTER_VISION_ENDPOINT}}
-                    AZURE_COMPUTER_VISION_KEY: ${{parameters.AZURE_COMPUTER_VISION_KEY}}
-                    DOCKER_BACKEND_IMAGE: ${{parameters.DOCKER_BACKEND_IMAGE}}
-                    AZURE_BLOB_CONTAINER_NAME: ${{parameters.AZURE_BLOB_CONTAINER_NAME}}
-                    AZURE_FOLDER_REGULACIONES: ${{parameters.AZURE_FOLDER_REGULACIONES}}
